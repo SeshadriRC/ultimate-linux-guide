@@ -1,4 +1,16 @@
 
+## apache2
+
+```bash
+apt install -y apache2
+
+# change the port configuration
+cat /etc/apache2/ports.conf
+
+# need to update the virtualhost port, once we update above
+cat /etc/apache2/sites-enabled/000-default.conf
+```
+
 ## Openssh
 
 ```bash
