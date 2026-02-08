@@ -1,1 +1,1 @@
-df
+- Follow this [repo](https://github.com/SeshadriRC/ultimate-linux-guide/blob/main/01-getting-started/04-setup.md#docker-command-to-run-ubuntu-linux-container-in-windows-host-persistent--long-term)
