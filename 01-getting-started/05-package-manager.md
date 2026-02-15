@@ -114,8 +114,10 @@ sudo zypper remove nginx   # Remove a package
   sudo dpkg-reconfigure unattended-upgrades
   ```
 
----
+
 This document provides a solid foundation for understanding package managers in Linux! 🚀
+
+---
 
 ## Most Installed packages
 
