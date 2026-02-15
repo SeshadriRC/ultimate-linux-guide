@@ -60,12 +60,17 @@ sudo apt upgrade -y
 ## 🛠 Essential Package Manager Commands
 ### **APT (Debian, Ubuntu)**
 ```bash
-sudo apt update         # Update package lists
-sudo apt upgrade -y     # Upgrade installed packages
-sudo apt install nginx  # Install a package
-sudo apt remove nginx   # Remove a package
-sudo apt autoremove     # Remove unused dependencies
-sudo apt search nginx   # Search for a package
+sudo apt update            # Update package lists
+sudo apt upgrade -y        # Upgrade installed packages
+apt list --upgradable      # all installed packages that have newer versions available
+sudo apt install nginx     # Install a package
+sudo apt remove nginx      # Remove a package
+sudo apt autoremove        # Remove unused dependencies
+sudo apt search nginx      # Search for a package
+apt-get clean              # removes all downloaded package files from the local APT cache
+
+apt show nginx | grep Installed-Size          # shows the estimated install size, it will work even if app not installed
+dpkg -s openssh-server | grep Installed-Size  # shows the actual installed size, it won't work if app didn't installed
 ```
 
 ### **DNF (Fedora, RHEL, CentOS)**
