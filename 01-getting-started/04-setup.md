@@ -28,6 +28,18 @@ docker run -dit `
       
 ```
 
+- Now you can connect to the server using ```ssh```. Make sure you installed ```sshd``` inside the container and start it.
+
+```bash
+apt install -y openssh-server  # Install openssh-server for sshd
+root@ubuntu-dev:/home# dpkg -s openssh-server | grep Installed-Size
+Installed-Size: 2093
+
+
+ssh sesha1@localhost -p 2222
+```
+
+---
 ### Docker Command to Run Ubuntu Linux Container in mac or linux host (Persistent & Long-Term) 
 
 ```bash
