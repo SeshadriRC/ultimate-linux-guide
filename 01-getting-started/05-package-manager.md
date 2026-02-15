@@ -113,3 +113,14 @@ sudo zypper remove nginx   # Remove a package
 
 ---
 This document provides a solid foundation for understanding package managers in Linux! 🚀
+
+## Most Installed packages
+
+```bash
+apt install -y net-tools        # used to install netstat
+apt install -y inetutils-ping   # used to install ping
+apt install -y curl             # used to install curl
+apt install -y openssh          # used for ssh
+apt install -y less             # used for less command
+apt install -y nginx            # used to install nginx webserver
+```
