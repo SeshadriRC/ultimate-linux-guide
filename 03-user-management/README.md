@@ -44,7 +44,7 @@ passwd username
 - **Password expiration**: Set password expiry days
 
 ```bash
-chage -l <username>
+chage -l <username>  # Check the password policy of user
 
 root@ubuntu-dev:/home# chage -l sesha1
 Last password change                                    : Feb 15, 2026
@@ -56,28 +56,54 @@ Maximum number of days between password change          : 99999
 Number of days of warning before password expires       : 7
 
   
-chage -M 90 username
+chage -M 90 <username> # Set password policy to user
+
+root@ubuntu-dev:/home# chage -l sesha1
+Last password change                                    : Feb 15, 2026
+Password expires                                        : May 16, 2026
+Password inactive                                       : never
+Account expires                                         : never
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 90
+Number of days of warning before password expires       : 7
+  
 
 
 ```
 - **Lock a user account**
   ```bash
-  passwd -l username
+  passwd -l username   # It locks the password of user,user cannot log in using password authentication anymore.
+
+  root@ubuntu-dev:/home# passwd -l sesha1
+  passwd: password changed.
+
   ```
+  
 - **Unlock a user account**
   ```bash
   passwd -u username
+
+  root@ubuntu-dev:/home# passwd -u sesha1
+  passwd: password changed.
+
   ```
 
 ## Modifying Users
 Modify an existing user with `usermod`:
 - Change the username:
   ```bash
-  usermod -l new_username old_username
+  usermod -l new_username old_username  # However it will use the same home directory of old user
+  
   ```
 - Change the home directory:
   ```bash
   usermod -d /new/home/directory -m username
+
+  root@ubuntu-dev:/home# usermod -d /home/sesha2 -m sesha2
+  root@ubuntu-dev:/home# su - sesha2
+  sesha2@ubuntu-dev:~$ pwd
+  /home/sesha2
+
   ```
 - Change the default shell:
   ```bash
