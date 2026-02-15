@@ -47,7 +47,8 @@
 - `yy` – Copy (yank) a **line**  
 - `yw` – Copy (yank) a **word**  
 - `p` – Paste **after** the cursor  
-- `P` – Paste **before** the cursor  
+- `P` – Paste **before** the cursor
+- `v` - Enter the visual mode and press `y` for copy and `p` for paste
 
 ---
 
