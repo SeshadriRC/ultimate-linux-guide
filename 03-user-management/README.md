@@ -42,9 +42,24 @@ passwd username
 
 ### Enforcing Password Policies
 - **Password expiration**: Set password expiry days
-  ```bash
-  chage -M 90 username
-  ```
+
+```bash
+chage -l <username>
+
+root@ubuntu-dev:/home# chage -l sesha1
+Last password change                                    : Feb 15, 2026
+Password expires                                        : never
+Password inactive                                       : never
+Account expires                                         : never
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 99999
+Number of days of warning before password expires       : 7
+
+  
+chage -M 90 username
+
+
+```
 - **Lock a user account**
   ```bash
   passwd -l username
