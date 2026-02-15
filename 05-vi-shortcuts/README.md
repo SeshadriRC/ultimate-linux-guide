@@ -1,4 +1,4 @@
-# VI Editor Shortcuts 
+# VI Editor/Nano Shortcuts 
 
 ### Modes in VI Editor
 - **Normal Mode** (default) – Used for navigation and command execution.
@@ -6,6 +6,16 @@
 - **Command Mode** – Used for saving, quitting, and searching (press `:` in Normal mode).
 
 ---
+
+- If in case it opens nano, then you type below, so that it will open in vi editor
+
+```bash
+EDITOR=vi crontab -e
+
+
+# Basic shortcuts in nano
+After writing into a file press ctrl+o, enter, ctrl+x    # it will save and come out of the file
+```
 
 ### Basic Navigation
 - `h` – Move **left**  
