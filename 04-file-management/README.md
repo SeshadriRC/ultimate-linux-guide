@@ -12,6 +12,11 @@
 9. **`cp -r dir1 dir2`** – Copies a directory recursively.
 10. **`mv old_name new_name`** – Moves or renames a file or directory.
 
+```bash
+# Generate a file which has 50 lines
+for i in {1..50}; do echo "This is line $i"; done > file.txt
+```
+
 ### File Viewing and Editing
 11. **`cat file.txt`** – Displays file content.
 12. **`tac file.txt`** – Displays file content in reverse order.
