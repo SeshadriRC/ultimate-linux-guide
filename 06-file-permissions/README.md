@@ -62,9 +62,9 @@ chown -R newuser:newgroup directory/
 chgrp newgroup filename  # Change group
 chgrp -R newgroup directory/  # Change group recursively
 ```
-
+ Note: below topic won't work in .sh script, i tested
 ## Special Permissions
-### SetUID (`s` on user execute bit)
+### SetUID (`s` on user execute bit)   -
 Allows users to run a file with the file owner's permissions.
 ```bash
 chmod u+s filename
@@ -83,6 +83,26 @@ chmod g+s directory/  # Set on directory
 Used on directories to allow only the owner to delete their files.
 ```bash
 chmod +t directory/
+
+
+# Before enabling +t, it removed the file
+sesha1@ubuntu-dev:/home/sesha3$ ls -lrth
+total 0
+-rwxrwxrwx 1 sesha3 sesha3 0 Feb 15 08:55 file1
+sesha1@ubuntu-dev:/home/sesha3$ rm file1
+sesha1@ubuntu-dev:/home/sesha3$ ls -lrth
+total 0
+
+# After enabling +t, it didn't permitted
+sesha1@ubuntu-dev:/home/sesha3$ ls -lrth
+total 0
+-rwxrwxrwx 1 sesha3 sesha3 0 Feb 15 08:56 file1
+sesha1@ubuntu-dev:/home/sesha3$ rm file1
+rm: cannot remove 'file1': Operation not permitted
+sesha1@ubuntu-dev:/home/sesha3$ rm -r file1
+rm: cannot remove 'file1': Operation not permitted
+
+
 ```
 Example: `/tmp` directory.
 
