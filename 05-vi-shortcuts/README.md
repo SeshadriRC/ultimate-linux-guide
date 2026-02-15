@@ -14,11 +14,11 @@
 - `k` – Move **up**  
 - `0` – Move to the **beginning** of the line  
 - `^` – Move to the **first non-blank** character of the line  
-- `$` – Move to the **end** of the line  
+- `shift+$` – Move to the **end** of the line  
 - `w` – Move to the **next word**  
 - `b` – Move to the **previous word**  
 - `gg` – Move to the **start** of the file  
-- `G` – Move to the **end** of the file  
+- `shift+G` – Move to the **end** of the file  
 - `:n` – Move to **line number `n`**  
 
 ---
