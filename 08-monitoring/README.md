@@ -83,6 +83,33 @@ ip a  # Show IP addresses and interfaces
 ```bash
 netstat -tulnp  # Show listening ports
 ss -tulnp  # Alternative to netstat
+
+| Flag | Meaning      |
+| ---- | ------------ |
+| `-t` | TCP          |
+| `-u` | UDP          |
+| `-l` | Listening    |
+| `-n` | Numeric      |
+| `-p` | Process info |
+
+
+Eg:
+
+root@LAPTOP-QMBUJPPJ:/var/log# ss -tulnp | grep nginx
+tcp   LISTEN 0      511           0.0.0.0:80        0.0.0.0:*    users:(("nginx",pid=1177,fd=5),("nginx",pid=1176,fd=5),("nginx",pid=1175,fd=5),("nginx",pid=1174,fd=5),(nginx",pid=1172,fd=5))
+tcp   LISTEN 0      511              [::]:80           [::]:*    users:(("nginx",pid=1177,fd=6),("nginx",pid=1176,fd=6),("nginx",pid=1175,fd=6),("nginx",pid=1174,fd=6),(nginx",pid=1172,fd=6))
+
+| Field           | Meaning                                               |
+| --------------- | ----------------------------------------------------- |
+| `tcp`           | TCP protocol                                          |
+| `LISTEN`        | Port is open and accepting connections                |
+| `0.0.0.0:80`    | NGINX listening on **port 80 on ALL IPv4 interfaces** |
+| `0.0.0.0:*`     | Accepting connections from **any IP**                 |
+| `nginx`         | NGINX process                                         |
+| `pid=1172–1177` | Worker + master processes                             |
+
+NGINX uses a master–worker model: 1 master process and Multiple worker processes
+
 ```
 ### Testing Connectivity
 ```bash
