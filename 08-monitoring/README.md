@@ -92,6 +92,18 @@ traceroute google.com  # Trace the path to Google
 ### Checking DNS Resolution
 ```bash
 nslookup example.com
+
+root@LAPTOP-QMBUJPPJ:/var/log# nslookup google.com
+Server:         10.255.255.254                                 # DNS Server
+Address:        10.255.255.254#53
+
+Non-authoritative answer:                                      
+Name:   google.com
+Address: 142.251.223.238                                       # IPv4 Address
+
+Name:   google.com
+Address: 2404:6800:4007:836::200e                              # IPv6 Address
+
 ```
 
 ## Log Monitoring
