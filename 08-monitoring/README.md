@@ -19,8 +19,8 @@ Monitoring system resources is essential to ensure optimal performance, detect i
 ### Network Monitoring
 - `ifconfig` – Show network interfaces (deprecated, use `ip a`)
 - `ip a` – Show network interface details
-- `netstat -tulnp` – Show active connections and listening ports
-- `ss -tulnp` – Alternative to `netstat` for socket statistics
+- `netstat -tulnp` – Show active connections and listening ports - ``` # it is deprecated , so please use ss ```
+- `ss -tulnp` – Alternative to `netstat` for socket statistics.  ``` # used to inspect active listening sockets and identify which processes are bound to which ports. ```
 - `ping hostname` – Test network connectivity
 - `traceroute hostname` – Show network path to a host
 - `nslookup domain` – Get DNS resolution details
