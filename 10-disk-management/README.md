@@ -40,16 +40,45 @@ Managing disks and storage efficiently is crucial for system performance and sta
 List all block devices:
 ```bash
 lsblk
+
+NAME      MAJ:MIN RM SIZE RO TYPE MOUNTPOINTS
+xvda      202:0    0   8G  0 disk
+├─xvda1   202:1    0   8G  0 part /
+├─xvda127 259:0    0   1M  0 part
+└─xvda128 259:1    0  10M  0 part /boot/efi
 ```
 ### Using `fdisk`
 View partition details:
 ```bash
 fdisk -l
+
+[root@ip-172-31-10-248 ~]# fdisk -l
+Disk /dev/xvda: 8 GiB, 8589934592 bytes, 16777216 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: gpt
+Disk identifier: D320B4AF-A7CC-406A-95C6-698CB954EADE
+
+Device       Start      End  Sectors Size Type
+/dev/xvda1   24576 16777182 16752607   8G Linux filesystem
+/dev/xvda127 22528    24575     2048   1M BIOS boot
+/dev/xvda128  2048    22527    20480  10M EFI System
 ```
 ### Using `df`
 Check available disk space:
 ```bash
 df -h
+
+[root@ip-172-31-10-248 ~]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+devtmpfs        4.0M     0  4.0M   0% /dev
+tmpfs           481M     0  481M   0% /dev/shm
+tmpfs           193M  444K  192M   1% /run
+/dev/xvda1      8.0G  1.6G  6.4G  20% /
+tmpfs           481M     0  481M   0% /tmp
+/dev/xvda128     10M  1.3M  8.7M  13% /boot/efi
+tmpfs            97M     0   97M   0% /run/user/1000
 ```
 ### Using `du`
 Find the size of a directory:
