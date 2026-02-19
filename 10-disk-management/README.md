@@ -203,21 +203,104 @@ mount -o remount,rw /mnt
 ### Create a Physical Volume
 ```bash
 pvcreate /dev/sdX
+
+[root@ip-172-31-8-162 ~]# pvcreate /dev/xvdb
+  Physical volume "/dev/xvdb" successfully created.
+[root@ip-172-31-8-162 ~]# pvs
+  PV         VG Fmt  Attr PSize PFree
+  /dev/sdb      lvm2 ---  5.00g 5.00g
 ```
 ### Create a Volume Group
 ```bash
 vgcreate vg_name /dev/sdX
+
+[root@ip-172-31-8-162 ~]# vgcreate vg-vol1 /dev/xvdb
+  Volume group "vg-vol1" successfully created
+
+[root@ip-172-31-8-162 ~]# vgs
+  VG      #PV #LV #SN Attr   VSize  VFree
+  vg-vol1   1   0   0 wz--n- <5.00g <5.00g
 ```
 ### Create a Logical Volume
+
 ```bash
 lvcreate -L 10G -n lv_name vg_name
+
+[root@ip-172-31-8-162 ~]# lvcreate -L 4G -n lv_mylv vg-vol1
+
+[root@ip-172-31-8-162 ~]# lvs
+  LV      VG      Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  lv_mylv vg-vol1 -wi-a----- 4.00g
 ```
 ### Format and Mount the Logical Volume
 ```bash
 mkfs.ext4 /dev/vg_name/lv_name
 mount /dev/vg_name/lv_name /mnt
+
+mkfs.ext4 /dev/vg-vol1/lv_mylv
+mount /dev/vg-vol1/lv_mylv /sesha/demo
+
+[root@ip-172-31-8-162 ~]# df -h /sesha/demo
+Filesystem                    Size  Used Avail Use% Mounted on
+/dev/mapper/vg--vol1-lv_mylv  3.9G   24K  3.7G   1% /sesha/demo
+[root@ip-172-31-8-162 ~]# lsblk
+NAME               MAJ:MIN RM SIZE RO TYPE MOUNTPOINTS
+xvda               202:0    0   8G  0 disk
+├─xvda1            202:1    0   8G  0 part /
+├─xvda127          259:0    0   1M  0 part
+└─xvda128          259:1    0  10M  0 part /boot/efi
+xvdb               202:16   0   5G  0 disk
+└─vg--vol1-lv_mylv 253:0    0   4G  0 lvm  /sesha/demo
+```
+## Now delete the PV which we created
+
+### Delete Logical Volume (LV)
+
+```bash
+lvremove /dev/vg-name/lv-name
+
+lvremove /dev/vg-vol1/lv_mylv
+[root@ip-172-31-8-162 ~]# lvremove /dev/vg-vol1/lv_mylv
+Do you really want to remove active logical volume vg-vol1/lv_mylv? [y/n]: y
+  Logical volume "lv_mylv" successfully removed.
+
+[root@ip-172-31-8-162 ~]# lvs             # it won't show anything
 ```
 
+### Delete Volume Group (VG)
+
+```bash
+vgremove <vg-group-name>
+
+[root@ip-172-31-8-162 ~]# vgremove vg-vol1
+  Volume group "vg-vol1" successfully removed
+
+[root@ip-172-31-8-162 ~]# vgs
+[root@ip-172-31-8-162 ~]#
+```
+
+### Delete Physical volume
+
+```bash
+pvremove <device-name>
+
+pvremove /dev/xvdb
+
+[root@ip-172-31-8-162 ~]# pvremove /dev/xvdb
+  Labels on physical volume "/dev/xvdb" successfully wiped.
+[root@ip-172-31-8-162 ~]# pvs
+[root@ip-172-31-8-162 ~]#
+
+[root@ip-172-31-8-162 ~]# lsblk
+NAME      MAJ:MIN RM SIZE RO TYPE MOUNTPOINTS
+xvda      202:0    0   8G  0 disk
+├─xvda1   202:1    0   8G  0 part /
+├─xvda127 259:0    0   1M  0 part
+└─xvda128 259:1    0  10M  0 part /boot/efi
+xvdb      202:16   0   5G  0 disk
+```
+
+---
 ## Swap Management
 ### Create a Swap Partition
 ```bash
@@ -316,3 +399,164 @@ mount -a
 | Partition a new disk          | `fdisk`                     |
 | Mount an existing partition   | `mount`                     |
 | Full setup (new disk)         | `fdisk + mkfs + mount`      |
+
+
+******************************************************************************************
+## My-notes
+******************************************************************************************
+
+Good question — and your `lsblk` output is a **perfect real example** to explain this clearly.
+
+Let’s break it down simply.
+
+---
+
+# 🔹 Difference between **partition (part)** and **LVM (lvm)**
+
+## 1️⃣ Partition (`part`)
+
+A **partition** is a **fixed slice of a disk**.
+
+Example from your output:
+
+```
+xvda1   8G   part   /
+```
+
+Meaning:
+
+* Disk: `xvda`
+* Partition: `xvda1`
+* Size: `8G`
+* Mounted at: `/`
+
+### Key properties:
+
+* Fixed size
+* Hard to resize
+* Traditional disk management
+* If full → resizing is **complex**
+
+---
+
+## 2️⃣ LVM (`lvm`) — Logical Volume Manager
+
+LVM is a **flexible storage management layer** on top of disks.
+
+Example from your output:
+
+```
+xvdb                 5G   disk
+└─ec2--vol--1-lv_name 4G   lvm   /sesha/demo
+```
+
+Meaning:
+
+* Disk: `xvdb`
+* LVM Logical Volume: `ec2--vol--1-lv_name`
+* Mounted at: `/sesha/demo`
+
+### Key properties:
+
+* Dynamic resizing (extend / shrink)
+* Can combine **multiple disks**
+* Can take **snapshots**
+* Very flexible
+
+---
+
+# 🔹 How storage flows in LVM
+
+```
+Disk (/dev/xvdb)
+    ↓
+Physical Volume (PV)
+    ↓
+Volume Group (VG)
+    ↓
+Logical Volume (LV)
+    ↓
+Filesystem + Mount
+```
+
+Example:
+
+```
+/dev/xvdb → PV → VG → LV → /sesha/demo
+```
+
+---
+
+# 🔹 Key Differences — Simple Table
+
+| Feature                | Partition (part) | LVM (lvm)   |
+| ---------------------- | ---------------- | ----------- |
+| Flexibility            | ❌ Low            | ✅ Very High |
+| Resize                 | ❌ Hard           | ✅ Easy      |
+| Combine multiple disks | ❌ No             | ✅ Yes       |
+| Snapshots              | ❌ No             | ✅ Yes       |
+| Enterprise usage       | ❌ Rare           | ✅ Standard  |
+| Performance            | Same             | Same        |
+
+---
+
+# 🔹 Your System Explained
+
+### Root filesystem (Traditional partition):
+
+```
+xvda1  →  /    (8G part)
+```
+
+### Extra disk using LVM:
+
+```
+xvdb → LVM → /sesha/demo
+```
+
+This is **best practice**:
+
+* OS disk → normal partition
+* Data disk → LVM
+
+---
+
+# 🔹 When should you use LVM?
+
+Use **LVM** when:
+
+* Database storage
+* Application data
+* Log partitions
+* Growing filesystems
+* Production servers
+
+Avoid LVM when:
+
+* Boot partitions
+* Very small systems
+* Embedded systems
+
+---
+
+# 🔹 Real-world Example (Your Case)
+
+If `/sesha/demo` becomes full:
+
+With **partition** → Painful resize
+With **LVM** → Just 2 commands:
+
+```bash
+lvextend -L +2G /dev/ec2-vol-1/lv_name
+xfs_growfs /sesha/demo
+```
+
+🔥 No reboot, no downtime.
+
+---
+
+If you want, I can give you **complete hands-on LVM lab** with:
+
+* create → extend → snapshot → restore → delete
+
+Perfect for interviews + real admin work.
