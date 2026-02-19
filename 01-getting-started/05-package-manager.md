@@ -129,4 +129,5 @@ apt install -y openssh          # used for ssh
 apt install -y less             # used for less command
 apt install -y nginx            # used to install nginx webserver
 apt install -y sshpass          # which allows you to provide the ssh password without using the prompt
+apt install -y lvm2             # used to install lvm
 ```
