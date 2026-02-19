@@ -302,17 +302,43 @@ xvdb      202:16   0   5G  0 disk
 
 ---
 ## Swap Management
+
+- Swap management is about configuring, enabling, tuning, and controlling swap space in Linux — which is disk space used as virtual memory when RAM is insufficient.
+- Swap = Disk-based extension of RAM
+- When physical RAM is full, Linux moves inactive memory pages to disk (swap) to:
+    - Prevent OOM (Out Of Memory) crashes
+    - Keep the system responsive
+
+Think of it as:
+- Emergency memory backup on disk
+
 ### Create a Swap Partition
 ```bash
 mkswap /dev/sdX
+
+[root@ip-172-31-8-162 ~]# mkswap /dev/xvdb
+Setting up swapspace version 1, size = 5 GiB (5368705024 bytes)
+no label, UUID=9b10bb3c-dc1d-4f33-9dd5-827444f8f127
 ```
 ### Enable Swap
 ```bash
 swapon /dev/sdX
+
+[root@ip-172-31-8-162 ~]# swapon /dev/xvdb
+[root@ip-172-31-8-162 ~]# free -h
+               total        used        free      shared  buff/cache   available
+Mem:           961Mi       153Mi       577Mi       0.0Ki       230Mi       670Mi
+Swap:          5.0Gi          0B       5.0Gi
 ```
 ### Disable Swap
 ```bash
 swapoff /dev/sdX
+
+[root@ip-172-31-8-162 ~]# swapoff /dev/xvdb
+[root@ip-172-31-8-162 ~]# free -h
+               total        used        free      shared  buff/cache   available
+Mem:           961Mi       153Mi       576Mi       0.0Ki       230Mi       670Mi
+Swap:             0B          0B          0B
 ```
 
 ## Additional Notes - When to Use fdisk, mount, or Both
@@ -560,3 +586,166 @@ If you want, I can give you **complete hands-on LVM lab** with:
 * create → extend → snapshot → restore → delete
 
 Perfect for interviews + real admin work.
+
+*************************************************************************************
+
+Resizing a volume has **two parts**:
+
+1. **Resize the EBS volume in AWS**
+2. **Resize the filesystem inside Linux**
+
+I’ll give you **exact step-by-step commands** for both.
+
+---
+
+# 🔹 Step 1 — Resize EBS Volume (AWS Side)
+
+First, find your **Volume ID**:
+
+```bash
+lsblk
+```
+
+You already know your disk is:
+
+```
+xvda → root
+xvdb → extra volume
+```
+
+Now get the **Volume ID**:
+
+```bash
+aws ec2 describe-volumes \
+  --filters Name=attachment.device,Values=/dev/xvdb \
+  --query 'Volumes[].VolumeId' \
+  --output text
+```
+
+Now **increase size** (example: from 5G → 10G):
+
+```bash
+aws ec2 modify-volume --volume-id vol-xxxxxxxx --size 10
+```
+
+Check progress:
+
+```bash
+aws ec2 describe-volumes-modifications --volume-id vol-xxxxxxxx
+```
+
+Wait until:
+
+```
+"ModificationState": "completed"
+```
+
+---
+
+# 🔹 Step 2 — Rescan Disk (Linux Side)
+
+```bash
+echo 1 > /sys/class/block/xvdb/device/rescan
+lsblk
+```
+
+Now you should see **bigger disk size**.
+
+---
+
+# 🔹 Step 3 — Resize Partition / LVM (Based on Setup)
+
+You had **LVM earlier**, so I’ll give **LVM resize steps**.
+
+### Resize Physical Volume (PV)
+
+```bash
+pvresize /dev/xvdb
+```
+
+Verify:
+
+```bash
+pvs
+```
+
+---
+
+### Extend Logical Volume (LV)
+
+Use **all free space**:
+
+```bash
+lvextend -l +100%FREE /dev/ec2-vol-1/lv_name
+```
+
+Verify:
+
+```bash
+lvs
+```
+
+---
+
+### Resize Filesystem (VERY IMPORTANT)
+
+Check FS type:
+
+```bash
+df -Th
+```
+
+If **XFS** (default on Amazon Linux):
+
+```bash
+xfs_growfs /sesha/demo
+```
+
+If **EXT4**:
+
+```bash
+resize2fs /dev/ec2-vol-1/lv_name
+```
+
+---
+
+# 🔹 Step 4 — Verify
+
+```bash
+df -h
+```
+
+You should now see **expanded size**.
+
+---
+
+# 🔥 One-shot Summary (LVM Resize Flow)
+
+```bash
+aws ec2 modify-volume --volume-id vol-xxxx --size 10
+pvresize /dev/xvdb
+lvextend -l +100%FREE /dev/ec2-vol-1/lv_name
+xfs_growfs /sesha/demo
+```
+
+---
+
+# ⚠ Important Notes
+
+| Scenario                 | Needed Steps                  |
+| ------------------------ | ----------------------------- |
+| Normal partition (xvda1) | growpart + resize2fs          |
+| LVM volume               | pvresize + lvextend + fs grow |
+| Root disk                | Special care                  |
+
+---
+
+If you want, I can give:
+
+* **Root volume resize steps**
+* **Non-LVM partition resize**
+* **Live production safe resize procedure**
+
+Just say 😄
+
+***************************************************************************************
