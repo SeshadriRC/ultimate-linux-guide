@@ -74,47 +74,6 @@ xvda     202:0    0    9G  0 disk
 ├─xvda15 202:15   0  106M  0 part /boot/efi
 └─xvda16 259:0    0  913M  0 part /boot
 ```
-
-### After resize
-
-```bash
-root@ip-172-31-8-173:~# growpart /dev/xvda 1
-CHANGED: partition=1 start=2099200 old: size=14677983 end=16777182 new: size=16775135 end=18874334
-root@ip-172-31-8-173:~# lsblk
-NAME     MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
-loop0      7:0    0   74M  1 loop /snap/core22/2163
-loop1      7:1    0 27.6M  1 loop /snap/amazon-ssm-agent/11797
-loop2      7:2    0 27.8M  1 loop /snap/amazon-ssm-agent/12322
-loop3      7:3    0 48.1M  1 loop /snap/snapd/25935
-loop4      7:4    0   74M  1 loop /snap/core22/2292
-loop5      7:5    0 50.9M  1 loop /snap/snapd/25577
-xvda     202:0    0    9G  0 disk
-├─xvda1  202:1    0    8G  0 part /
-├─xvda14 202:14   0    4M  0 part
-├─xvda15 202:15   0  106M  0 part /boot/efi
-└─xvda16 259:0    0  913M  0 part /boot
-root@ip-172-31-8-173:~# df -T /
-Filesystem     Type 1K-blocks    Used Available Use% Mounted on
-/dev/root      ext4   7034376 5326112   1691880  76% /
-root@ip-172-31-8-173:~# resize2fs /dev/xvda1
-resize2fs 1.47.0 (5-Feb-2023)
-Filesystem at /dev/xvda1 is mounted on /; on-line resizing required
-old_desc_blocks = 1, new_desc_blocks = 1
-The filesystem on /dev/xvda1 is now 2096891 (4k) blocks long.
-
-root@ip-172-31-8-173:~# df -h
-Filesystem      Size  Used Avail Use% Mounted on
-/dev/root       7.7G  5.1G  2.6G  67% /
-tmpfs           478M     0  478M   0% /dev/shm
-tmpfs           191M  900K  191M   1% /run
-tmpfs           5.0M     0  5.0M   0% /run/lock
-/dev/xvda16     881M  156M  663M  20% /boot
-/dev/xvda15     105M  6.2M   99M   6% /boot/efi
-tmpfs            96M   16K   96M   1% /run/user/1000
-root@ip-172-31-8-173:~#
-
-```
-
 This is **expected behavior** 👍 — you resized the **EBS volume**, but the **Linux partition and filesystem are still using the old size**. You now need to **extend the partition + filesystem**.
 
 Let’s fix it cleanly.
@@ -215,6 +174,50 @@ Filesystem resize
 
 
 If your instance was **LVM-based**, steps differ — but yours is **simple partition-based**, so above is correct.
+
+### After resize
+
+```bash
+root@ip-172-31-8-173:~# growpart /dev/xvda 1
+CHANGED: partition=1 start=2099200 old: size=14677983 end=16777182 new: size=16775135 end=18874334
+
+root@ip-172-31-8-173:~# lsblk
+NAME     MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+loop0      7:0    0   74M  1 loop /snap/core22/2163
+loop1      7:1    0 27.6M  1 loop /snap/amazon-ssm-agent/11797
+loop2      7:2    0 27.8M  1 loop /snap/amazon-ssm-agent/12322
+loop3      7:3    0 48.1M  1 loop /snap/snapd/25935
+loop4      7:4    0   74M  1 loop /snap/core22/2292
+loop5      7:5    0 50.9M  1 loop /snap/snapd/25577
+xvda     202:0    0    9G  0 disk
+├─xvda1  202:1    0    8G  0 part /
+├─xvda14 202:14   0    4M  0 part
+├─xvda15 202:15   0  106M  0 part /boot/efi
+└─xvda16 259:0    0  913M  0 part /boot
+
+root@ip-172-31-8-173:~# df -T /
+Filesystem     Type 1K-blocks    Used Available Use% Mounted on
+/dev/root      ext4   7034376 5326112   1691880  76% /
+
+root@ip-172-31-8-173:~# resize2fs /dev/xvda1
+resize2fs 1.47.0 (5-Feb-2023)
+Filesystem at /dev/xvda1 is mounted on /; on-line resizing required
+old_desc_blocks = 1, new_desc_blocks = 1
+The filesystem on /dev/xvda1 is now 2096891 (4k) blocks long.
+
+root@ip-172-31-8-173:~# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/root       7.7G  5.1G  2.6G  67% /
+tmpfs           478M     0  478M   0% /dev/shm
+tmpfs           191M  900K  191M   1% /run
+tmpfs           5.0M     0  5.0M   0% /run/lock
+/dev/xvda16     881M  156M  663M  20% /boot
+/dev/xvda15     105M  6.2M   99M   6% /boot/efi
+tmpfs            96M   16K   96M   1% /run/user/1000
+root@ip-172-31-8-173:~#
+
+```
+
 
 ---
 
