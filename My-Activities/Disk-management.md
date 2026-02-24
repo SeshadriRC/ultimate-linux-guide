@@ -1,12 +1,12 @@
 
 Topics
 
-- [Create a volume and attach to the AWS instance](Create-a-volume-and-attach-to-the-AWS-instance)
+- [Create a volume and attach to the AWS instance](#Volume-create)
 - [Resize the existing volume](#Resize-the-existing-volume-in-AWS)
 
 ---
 
-## Create a volume and attach to the AWS instance
+## Volume-create
 
 - Create a volume
 - Attach a volume to EC2 instance
