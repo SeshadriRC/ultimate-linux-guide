@@ -1,3 +1,11 @@
+
+Topics
+
+- Create a volume and attach to the AWS instance
+- [Resize the existing volume](#Resize-the-existing-volume-in-AWS)
+
+---
+
 ## Create a volume and attach to the AWS instance
 
 - Create a volume
@@ -32,5 +40,9 @@
 - Now mount the volume
 
 <img width="847" height="623" alt="image" src="https://github.com/user-attachments/assets/e2e578b7-8855-44d2-80b6-a656979f47a9" />
+
+---
+
+## Resize the existing volume in AWS
 
 
