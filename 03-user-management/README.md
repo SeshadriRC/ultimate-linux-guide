@@ -240,7 +240,7 @@ Then add:
 ```bash
 username ALL=(ALL) NOPASSWD: /path/to/command   # Allow only specific command
 
-sesha ALL=(ALL) NOPASSWD: ALL                   # Allow all commands, highly risky
+sesha ALL=(ALL) NOPASSWD: ALL                   # Allow all commands, highly risky. also while login it won't ask password
 
 sesha3 ALL=(root) NOPASSWD: /usr/sbin/service ssh stop  # Allow only to stop ssh service
 
@@ -248,5 +248,10 @@ sesha3 ALL=(root) NOPASSWD: /usr/sbin/service ssh stop  # Allow only to stop ssh
 sesha3@ubuntu-dev:~$ sudo service ssh start
 [sudo] password for sesha3:
 Sorry, user sesha3 is not allowed to execute '/usr/sbin/service ssh start' as root on ubuntu-dev.
+
+
+# Another method
+root@LAPTOP-QMBUJPPJ:~# cat /etc/sudoers.d/90-sesha-nopasswd
+sesha ALL=(ALL) NOPASSWD:ALL
 
 ```
